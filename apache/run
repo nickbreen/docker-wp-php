@@ -1,5 +1,0 @@
-#!/bin/sh
-
-. /etc/container_environment.sh
-
-exec apache2ctl -e info -DNO_DETACH -DFOREGROUND -k start "${@}"
