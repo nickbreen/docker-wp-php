@@ -1,25 +1,26 @@
-FROM nickbreen/cron:v1.0.0
+FROM nickbreen/cron:v2.0.1
 
 MAINTAINER Nick Breen <nick@foobar.net.nz>
 
 RUN echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
     && curl -sSfL https://download.newrelic.com/548C16BF.gpg | apt-key add - \
-    && apt-get update -qqy \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
+    && apt-get update -y \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
       newrelic-php5 \
       php-http \
-      php5-curl \
-      php5-imagick \
-      php5-gd \
-      php5-json \
-      php5-mysql \
-      php5-oauth \
-    && apt-get clean -qqy
+      php-cli \
+      php-curl \
+      php-imagick \
+      php-gd \
+      php-json \
+      php-mysql \
+      php-oauth \
+    && apt-get clean -y
 
 ENV NR_INSTALL_KEY="" NR_APP_NAME=""
 
 # Configure and test the PHP configurations
-RUN php5enmod curl gd imagick json mysql oauth opcache
+RUN phpenmod curl gd imagick json mysqli oauth opcache
 
-COPY tweaks.ini /etc/php5/mods-available/
-RUN php5enmod tweaks
+COPY newrelic.ini /etc/php/7.0/mods-available/30-newrelic.ini
+RUN phpenmod 30-newrelic
