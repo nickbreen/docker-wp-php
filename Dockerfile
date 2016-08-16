@@ -22,5 +22,5 @@ ENV NR_INSTALL_KEY="" NR_APP_NAME=""
 # Configure and test the PHP configurations
 RUN phpenmod curl gd imagick json mysqli oauth opcache
 
-COPY newrelic.ini /etc/php/7.0/mods-available/30-newrelic.ini
-RUN phpenmod 30-newrelic
+COPY newrelic.ini /etc/php/7.0/mods-available/newrelic-local.ini
+RUN phpenmod newrelic-local
