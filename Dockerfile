@@ -1,6 +1,11 @@
-FROM nickbreen/cron:v2.0.1
+FROM nickbreen/cron:v2.0.2
 
 MAINTAINER Nick Breen <nick@foobar.net.nz>
+
+ENV NR_INSTALL_KEY="YOUR_LICENSE_KEY" NR_APP_NAME="My App Name"
+
+RUN echo newrelic-php5 newrelic-php5/application-name string '${NR_APP_NAME}' | debconf-set-selections \
+ && echo newrelic-php5 newrelic-php5/license-key string '${NR_INSTALL_KEY}' | debconf-set-selections
 
 RUN echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list \
     && curl -sSfL https://download.newrelic.com/548C16BF.gpg | apt-key add - \
@@ -18,18 +23,10 @@ RUN echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/
       php-oauth \
     && apt-get clean -y
 
-RUN phpenmod curl gd imagick json mbstring mysqli oauth opcache
-
-ENV NR_INSTALL_KEY="" NR_APP_NAME="PHP Application"
-
-RUN sed -i -e '/^newrelic.appname/s/"PHP Application"/"${NR_APP_NAME}"/' \
-  -e '/^newrelic.license/s/""/"${NR_INSTALL_KEY}"/' \
-  -e '/^;\?newrelic.browser_monitoring.auto_instrument/{s/true/false/;s/^\;//}' \
-  -e '/^;\?newrelic.transaction_tracer.detail/{s/1/0/;s/^\;//}' \
-  /etc/php/7.0/mods-available/newrelic.ini && \
-  egrep '^[^;]' /etc/php/7.0/mods-available/newrelic.ini | nl
-
 COPY logging.ini /etc/php/7.0/mods-available/logging.ini
-RUN phpenmod newrelic logging
 
-RUN php -r 'phpinfo(INFO_GENERAL|INFO_CONFIGURATION|INFO_MODULES|INFO_ENVIRONMENT);'
+RUN sed -e '/^;\?newrelic.browser_monitoring.auto_instrument/{s/true/false/;s/^\;//}' \
+        -e '/^;\?newrelic.transaction_tracer.detail/{s/1/0/;s/^\;//}' \
+        -i /etc/php/7.0/mods-available/newrelic.ini \
+ && egrep -vn '^;|^\s*$' /etc/php/7.0/mods-available/newrelic.ini \
+ && phpenmod newrelic logging curl gd imagick json mbstring mysqli oauth opcache && php -i

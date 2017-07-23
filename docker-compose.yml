@@ -1,6 +1,6 @@
 version: '2'
 services:
     php:
-        image: nickbreen/wp-php
+        image: nickbreen/wp-php:develop
         build:
             context: .
