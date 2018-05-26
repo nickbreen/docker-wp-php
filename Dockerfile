@@ -23,7 +23,7 @@ COPY run /etc/service/php-fpm/run
 COPY logging.ini /etc/php/7.0/mods-available/logging.ini
 
 # Enable for FPM
-RUN phpenmod logging curl gd imagick json memcache mysqli oauth opcache
+RUN phpenmod logging curl gd imagick json mbstring memcache mysqli oauth opcache
 
 # Test the Configuration
 RUN /etc/service/php-fpm/run -t 2>&1
