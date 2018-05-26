@@ -1,6 +1,8 @@
 version: '2'
 services:
-    php:
-        image: nickbreen/wp-php:develop
-        build:
-            context: .
+  php:
+    image: nickbreen/wp-php:latest
+    build:
+      context: .
+    volumes:
+    - ./www.conf:/etc/php/7.0/fpm/pool.d/www.conf:ro
